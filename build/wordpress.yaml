@@ -1,0 +1,39 @@
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/edge/main
+    - https://dl-cdn.alpinelinux.org/alpine/edge/community
+  packages:
+    - php
+    - php-mysqli
+    - php-curl
+    - php-dom
+    - php-exif
+    - php-fileinfo
+    - php-sodium
+    - php-xml
+    - php-zip
+    - php-bcmath
+    - php-gd
+    - php-iconv
+    - php-intl
+    - php-simplexml
+    - php-xmlreader
+
+environment:
+  PATH: /usr/bin
+
+accounts:
+  groups:
+    - groupname: nonroot
+      gid: 65532
+  users:
+    - username: nonroot
+      uid: 65532
+  run-as: nonroot
+
+entrypoint:
+  command: /usr/bin/php
+
+archs:
+  - x86_64
+  - arm64

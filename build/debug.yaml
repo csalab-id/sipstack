@@ -1,0 +1,28 @@
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/edge/main
+    - https://dl-cdn.alpinelinux.org/alpine/edge/community
+  packages:
+    - php
+    - php-mysqli
+    - php-curl
+    - php-dom
+    - php-exif
+    - php-fileinfo
+    - php-sodium
+    - php-xml
+    - php-zip
+    - php-bcmath
+    - php-gd
+    - php-iconv
+    - php-intl
+    - php-simplexml
+    - php-xmlreader
+    - alpine-base
+
+entrypoint:
+  command: /bin/sh -l
+
+archs:
+  - x86_64
+  - arm64

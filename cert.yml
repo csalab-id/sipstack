@@ -1,0 +1,23 @@
+version: "3"
+services:
+  certbot:
+    image: certbot/certbot:latest
+    ports:
+      - 0.0.0.0:80:80
+    environment:
+      - DOMAIN=${DOMAIN:-csalab.cloud}
+      - EMAIL=${EMAIL:-admin@csalab.id}
+    volumes:
+      - ./cert:/etc/letsencrypt
+    entrypoint: [ "certbot", "certonly", "-d", "${DOMAIN:-csalab.cloud}", "-d", "www.${DOMAIN:-csalab.cloud}", "--no-eff-email", "--agree-tos", "-m", "${EMAIL:-admin@csalab.id}", "--standalone" ]
+    networks:
+      internet:
+        ipv4_address: 10.10.0.10
+
+networks:
+  internet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.0.0/24
+          gateway: 10.10.0.1
