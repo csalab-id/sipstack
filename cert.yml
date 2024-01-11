@@ -4,9 +4,6 @@ services:
     image: certbot/certbot:latest
     ports:
       - 0.0.0.0:80:80
-    environment:
-      - DOMAIN=${DOMAIN:-csalab.cloud}
-      - EMAIL=${EMAIL:-admin@csalab.id}
     volumes:
       - ./cert:/etc/letsencrypt
     entrypoint: [ "certbot", "certonly", "-d", "${DOMAIN:-csalab.cloud}", "-d", "www.${DOMAIN:-csalab.cloud}", "--no-eff-email", "--agree-tos", "-m", "${EMAIL:-admin@csalab.id}", "--standalone" ]
