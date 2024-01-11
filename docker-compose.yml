@@ -6,13 +6,13 @@ services:
     restart: always
     ports:
       - 0.0.0.0:80:80
-      - 0.0.0.0:443:443
+      #- 0.0.0.0:443:443
     environment:
       - BACKEND=http://10.10.0.30:8080
       - BACKEND_WS=ws://10.10.0.30:8080
       #- APACHE_ALWAYS_TLS_REDIRECT=on
-      - PROXY_SSL_CERT=/cert/archive/${DOMAIN:-csalab.cloud}/cert1.pem
-      - PROXY_SSL_CERT_KEY=/cert/archive/${DOMAIN:-csalab.cloud}/privkey1.pem
+      #- PROXY_SSL_CERT=/cert/archive/${DOMAIN:-csalab.cloud}/cert1.pem
+      #- PROXY_SSL_CERT_KEY=/cert/archive/${DOMAIN:-csalab.cloud}/privkey1.pem
     volumes:
       - ./cert:/cert
     networks:
@@ -30,7 +30,7 @@ services:
       internet:
         ipv4_address: 10.10.0.30
       no-internet:
-        ipv4_address: 10.20.0.30
+        ipv4_address: 10.11.0.30
 
   debug:
     image: 'csalab/wordpress:debug-${ARCH:-amd64}'
@@ -44,7 +44,7 @@ services:
       internet:
         ipv4_address: 10.10.0.31
       no-internet:
-        ipv4_address: 10.20.0.31
+        ipv4_address: 10.11.0.31
 
   database:
     image: 'mysql:8.2.0'
@@ -59,7 +59,7 @@ services:
       - mysql:/var/lib/mysql
     networks:
       no-internet:
-        ipv4_address: 10.20.0.40
+        ipv4_address: 10.11.0.40
 
 networks:
   internet:
@@ -74,8 +74,8 @@ networks:
     internal: true
     ipam:
       config:
-        - subnet: 10.20.0.0/24
-          gateway: 10.20.0.1
+        - subnet: 10.11.0.0/24
+          gateway: 10.11.0.1
 
 volumes:
   data: {}
