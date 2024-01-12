@@ -37,6 +37,7 @@ services:
     hostname: debug
     restart: always
     tty: true
+    user: root
     volumes:
       - data:/app
     entrypoint: ["/bin/sh"]

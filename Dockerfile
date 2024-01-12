@@ -1,9 +1,9 @@
-FROM csalab/wordpress:debug-amd64 as builder
+FROM csalab/wordpress:debug as builder
 WORKDIR /tmp
 RUN wget https://github.com/WordPress/WordPress/archive/refs/tags/6.4.2.tar.gz && \
 tar -xf 6.4.2.tar.gz
 
-FROM csalab/wordpress:devel-amd64
+FROM csalab/wordpress:devel
 LABEL maintainer="admin@csalab.id"
 COPY --from=builder --chown=nginx:nginx /tmp/WordPress-6.4.2 /www
 WORKDIR /www
