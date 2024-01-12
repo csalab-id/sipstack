@@ -35,8 +35,8 @@ jobs:
       - run:
           name: Build and push wordpress images
           command: |
-            apt update
-            apt install -qy golang-go
+            sudo apt update
+            sudo apt install -qy golang-go
             go install chainguard.dev/apko@latest
             apko publish --sbom=false build/debug.yaml $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION-debug
             apko build --sbom=false build/wordpress.yaml $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel wordpress.tar
