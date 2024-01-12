@@ -47,6 +47,7 @@ jobs:
           command: |
             /home/circleci/go/bin/apko build --sbom=false build/wordpress.yaml $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel wordpress.tar
             docker import wordpress.tar $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel
+            docker push $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel
             export DOCKER_CLI_EXPERIMENTAL=enabled
             docker context create buildx-build
             docker buildx create --use buildx-build
