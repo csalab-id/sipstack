@@ -19,11 +19,8 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: Checking amd64 docker file code quality
-          command: docker run --rm -i ghcr.io/hadolint/hadolint:latest < Dockerfile-amd64 || true
-      - run:
-          name: Checking arm64 docker file code quality
-          command: docker run --rm -i ghcr.io/hadolint/hadolint:latest < Dockerfile-arm64 || true
+          name: Checking Dockerfile code quality
+          command: docker run --rm -i ghcr.io/hadolint/hadolint:latest < Dockerfile || true
   build-wordpress:
     executor: docker
     steps:
@@ -61,6 +58,38 @@ jobs:
               --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:latest \
               --platform linux/amd64,linux/arm64 -f Dockerfile .
             rm -rf go1.21.6.linux-amd64.tar.gz wordpress.tar
+  grype-scan:
+    executor: docker
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Setup grype
+          command: |
+            wget https://github.com/anchore/grype/releases/download/v0.74.0/grype_0.74.0_linux_amd64.deb
+            sudo dpkg -i grype_0.74.0_linux_amd64.deb
+      - run:
+          name: Scanning latest image
+          command: grype $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION
+      - run:
+          name: Scanning debug image
+          command: grype $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION-debug
+  trivy-scan:
+    executor: docker
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Setup trivy
+          command: |
+            wget https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.deb
+            sudo dpkg -i trivy_0.48.3_Linux-64bit.deb
+      - run:
+          name: Scanning latest image
+          command: trivy image $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION
+      - run:
+          name: Scanning debug image
+          command: trivy image $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION-debug
 
 workflows:
   version: 2
@@ -75,3 +104,9 @@ workflows:
       - build-wordpress:
           requires:
             - hadolint
+      - grype-scan:
+          requires:
+            - build-wordpress
+      - trivy-scan:
+          requires:
+            - build-wordpress
