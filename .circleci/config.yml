@@ -35,8 +35,7 @@ jobs:
       - run:
           name: Build wordpress debug image
           command: |
-            pwd
-            docker run --rm -v ./:/work -w /work cgr.dev/chainguard/apko build build/debug.yaml $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug debug.tar
+            docker run --rm -v /home/circleci/project:/work -w /work cgr.dev/chainguard/apko build build/debug.yaml $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug debug.tar
             docker load < debug.tar
             docker manifest create $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug --amend $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug-arm64 --amend $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug-amd64
             docker tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION-debug
@@ -45,7 +44,7 @@ jobs:
       - run:
           name: Build and push wordpress latest images
           command: |
-            docker run --rm -v ./:/work -w /work cgr.dev/chainguard/apko build build/wordpress.yaml $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel wordpress.tar
+            docker run --rm -v /home/circleci/project:/work -w /work cgr.dev/chainguard/apko build build/wordpress.yaml $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel wordpress.tar
             docker load < wordpress.tar
             docker manifest create $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel --amend $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel-arm64 --amend $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel-amd64
             docker buildx build --push --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:latest --platform linux/amd64,linux/arm64 -f Dockerfile .
