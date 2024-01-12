@@ -33,21 +33,15 @@ jobs:
           name: Login to docker hub
           command: echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin $DOCKER_REGISTRY
       - run:
-          name: Build wordpress debug image
+          name: Build and push wordpress images
           command: |
-            docker run --rm -v /home/circleci/project:/work -w /work cgr.dev/chainguard/apko build build/debug.yaml $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug debug.tar
-            docker load < debug.tar
-            docker manifest create $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug --amend $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug-arm64 --amend $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug-amd64
-            docker tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION-debug
-            docker push $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug
-            docker push $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION-debug
-      - run:
-          name: Build and push wordpress latest images
-          command: |
-            docker run --rm -v /home/circleci/project:/work -w /work cgr.dev/chainguard/apko build build/wordpress.yaml $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel wordpress.tar
-            docker load < wordpress.tar
-            docker manifest create $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel --amend $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel-arm64 --amend $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel-amd64
-            docker buildx build --push --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:latest --platform linux/amd64,linux/arm64 -f Dockerfile .
+            apt update
+            apt install -qy golang-go
+            go install chainguard.dev/apko@latest
+            apko publish --sbom=false build/debug.yaml $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION-debug
+            apko build --sbom=false build/wordpress.yaml $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel wordpress.tar
+            docker import wordpress.tar $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel
+            docker buildx build --push --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:latest --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION --platform linux/amd64,linux/arm64 -f Dockerfile .
 
 workflows:
   version: 2

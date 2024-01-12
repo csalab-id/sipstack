@@ -34,6 +34,12 @@ accounts:
 entrypoint:
   command: /bin/sh -l
 
+os-release:
+  id: sawps
+  version-id: '1.0.0'
+  name: 'Sawps LEP'
+  pretty-name: 'Sawps LEP (apko)'
+
 archs:
   - x86_64
   - arm64

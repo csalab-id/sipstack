@@ -1,3 +1,5 @@
 .env
 build.sh
 cert/
+sbom-*
+*.tar

@@ -38,6 +38,12 @@ entrypoint:
   services:
     nginx: sh -c "php-fpm83 && nginx -g 'daemon off;'"
 
+os-release:
+  id: sawps
+  version-id: '1.0.0'
+  name: 'Sawps LEP'
+  pretty-name: 'Sawps LEP (apko)'
+
 archs:
   - x86_64
   - arm64
