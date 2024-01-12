@@ -50,7 +50,7 @@ jobs:
             export DOCKER_CLI_EXPERIMENTAL=enabled
             docker context create buildx-build
             docker buildx create --use buildx-build
-            docker buildx build --push --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:latest --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION --platform linux/amd64,linux/arm64 -f Dockerfile .
+            docker buildx build --push --build-arg DOCKER_REGISTRY=$DOCKER_REGISTRY/ --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:latest --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION --platform linux/amd64,linux/arm64 -f Dockerfile .
             rm -rf go1.21.6.linux-amd64.tar.gz wordpress.tar
 
 workflows:
