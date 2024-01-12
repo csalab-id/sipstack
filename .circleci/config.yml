@@ -35,13 +35,14 @@ jobs:
       - run:
           name: Build and push wordpress images
           command: |
-            sudo apt update
-            sudo apt install -qy golang-go
-            GOPATH=/home/circleci/project/go go install chainguard.dev/apko@latest
-            /home/circleci/project/go/bin/apko publish --sbom=false build/debug.yaml $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION-debug
-            /home/circleci/project/go/bin/apko build --sbom=false build/wordpress.yaml $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel wordpress.tar
+            wget https://go.dev/dl/go1.21.6.linux-amd64.tar.gz
+            sudo tar -C /usr/local -xzf go1.21.6.linux-amd64.tar.gz
+            /usr/local/go/bin/go install chainguard.dev/apko@latest
+            /home/circleci/go/bin/apko publish --sbom=false build/debug.yaml $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION-debug
+            /home/circleci/go/bin/apko build --sbom=false build/wordpress.yaml $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel wordpress.tar
             docker import wordpress.tar $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel
             docker buildx build --push --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:latest --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION --platform linux/amd64,linux/arm64 -f Dockerfile .
+            rm -rf go1.21.6.linux-amd64.tar.gz wordpress.tar
 
 workflows:
   version: 2
