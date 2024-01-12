@@ -35,6 +35,7 @@ jobs:
       - run:
           name: Build wordpress debug image
           command: |
+            pwd
             docker run --rm -v ./:/work -w /work cgr.dev/chainguard/apko build build/debug.yaml $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug debug.tar
             docker load < debug.tar
             docker manifest create $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug --amend $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug-arm64 --amend $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug-amd64
