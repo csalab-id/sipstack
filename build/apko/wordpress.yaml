@@ -113,16 +113,21 @@ accounts:
     - groupname: nginx
       gid: 10000
     - groupname: nobody
-      gid: 10001
+      gid: 65534
   users:
     - username: nginx
       uid: 10000
     - username: nobody
-      uid: 10001
+      uid: 65534
   run-as: root
 
 paths:
   - path: /run/nginx
+    type: directory
+    uid: 10000
+    gid: 10000
+    permissions: 0o755
+  - path: /var/lib/nginx/tmp/fastcgi
     type: directory
     uid: 10000
     gid: 10000
