@@ -46,12 +46,6 @@ jobs:
       - run:
           name: Build and push wordpress latest images
           command: |
-            # /home/circleci/go/bin/apko build --quiet \
-            #   --sbom=false build/apko/wordpress.yaml \
-            #   $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel \
-            #   wordpress.tar
-            # docker import wordpress.tar $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel
-            # docker push $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel
             /home/circleci/go/bin/apko publish \
               --quiet --sbom=false build/apko/wordpress.yaml \
               $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel
@@ -64,7 +58,6 @@ jobs:
               --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION \
               --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:latest \
               --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress.Dockerfile .
-            rm -rf wordpress.tar
   grype-scan:
     executor: docker
     steps:
