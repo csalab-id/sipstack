@@ -1,0 +1,150 @@
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/edge/main
+    - https://dl-cdn.alpinelinux.org/alpine/edge/community
+  packages:
+    - php83
+    - php83-bcmath
+    - php83-bz2
+    - php83-calendar
+    - php83-cgi
+    - php83-common
+    - php83-ctype
+    - php83-curl
+    - php83-dba
+    - php83-dbg
+    - php83-dev
+    - php83-doc
+    - php83-dom
+    - php83-embed
+    - php83-enchant
+    - php83-exif
+    - php83-ffi
+    - php83-fileinfo
+    - php83-fpm
+    - php83-ftp
+    - php83-gd
+    - php83-gettext
+    - php83-gmp
+    - php83-iconv
+    - php83-imap
+    - php83-intl
+    - php83-ldap
+    - php83-litespeed
+    - php83-mbstring
+    - php83-mysqli
+    - php83-mysqlnd
+    - php83-odbc
+    - php83-opcache
+    - php83-openssl
+    - php83-pcntl
+    - php83-pdo
+    - php83-pdo_dblib
+    - php83-pdo_mysql
+    - php83-pdo_odbc
+    - php83-pdo_pgsql
+    - php83-pdo_sqlite
+    - php83-pear
+    - php83-pecl-amqp
+    - php83-pecl-apcu
+    - php83-pecl-ast
+    - php83-pecl-brotli
+    - php83-pecl-couchbase
+    - php83-pecl-ds
+    - php83-pecl-event
+    - php83-pecl-grpc
+    - php83-pecl-igbinary
+    - php83-pecl-imagick
+    - php83-pecl-imagick
+    - php83-pecl-luasandbox
+    - php83-pecl-mailparse
+    - php83-pecl-maxminddb
+    - php83-pecl-memcache
+    - php83-pecl-memcached
+    - php83-pecl-mongodb
+    - php83-pecl-msgpack
+    - php83-pecl-opentelemetry
+    - php83-pecl-pcov
+    - php83-pecl-psr
+    - php83-pecl-rdkafka
+    - php83-pecl-redis
+    - php83-pecl-smbclient
+    - php83-pecl-ssh2
+    - php83-pecl-swoole
+    - php83-pecl-swoole-dev
+    - php83-pecl-uploadprogress
+    - php83-pecl-uploadprogress-doc
+    - php83-pecl-xdebug
+    - php83-pecl-xhprof
+    - php83-pecl-xhprof-assets
+    - php83-pecl-yaml
+    - php83-pecl-zstd
+    - php83-pgsql
+    - php83-phar
+    - php83-phpdbg
+    - php83-posix
+    - php83-pspell
+    - php83-session
+    - php83-shmop
+    - php83-simplexml
+    - php83-snmp
+    - php83-soap
+    - php83-sockets
+    - php83-sodium
+    - php83-sqlite3
+    - php83-sysvmsg
+    - php83-sysvsem
+    - php83-sysvshm
+    - php83-tidy
+    - php83-tokenizer
+    - php83-xml
+    - php83-xmlreader
+    - php83-xmlwriter
+    - php83-xsl
+    - php83-zip
+    - nginx
+    - nginx-openrc
+
+environment:
+  PATH: ""
+
+accounts:
+  groups:
+    - groupname: nginx
+      gid: 10000
+    - groupname: nobody
+      gid: 10001
+  users:
+    - username: nginx
+      uid: 10000
+    - username: nobody
+      uid: 10001
+  run-as: root
+
+paths:
+  - path: /run/nginx
+    type: directory
+    uid: 10000
+    gid: 10000
+    permissions: 0o755
+  - path: /etc/nginx/http.d/default.conf
+    type: hardlink
+    source: /usr/share/nginx/http-default_server.conf
+    uid: 10000
+    gid: 10000
+    permissions: 0o644
+
+entrypoint:
+  type: service-bundle
+  services:
+    webserver: /wordpress-init
+
+os-release:
+  id: sipstack
+  version-id: '1.0.0'
+  name: 'Sipstack LEP'
+  pretty-name: 'Sipstack LEP (apko)'
+
+archs:
+  - x86_64
+  - arm64

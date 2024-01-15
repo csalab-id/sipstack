@@ -8,13 +8,15 @@ services:
       - 0.0.0.0:80:80
       #- 0.0.0.0:443:443
     environment:
-      - BACKEND=http://10.10.0.30:8080
-      - BACKEND_WS=ws://10.10.0.30:8080
+      - BACKEND=http://10.10.0.30:80
+      - BACKEND_WS=ws://10.10.0.30:80
       #- APACHE_ALWAYS_TLS_REDIRECT=on
       #- PROXY_SSL_CERT=/cert/archive/${DOMAIN:-csalab.cloud}/cert1.pem
       #- PROXY_SSL_CERT_KEY=/cert/archive/${DOMAIN:-csalab.cloud}/privkey1.pem
     volumes:
       - ./cert:/cert
+    depends_on:
+      - wordpress
     networks:
       internet:
         ipv4_address: 10.10.0.20
@@ -24,8 +26,9 @@ services:
     hostname: wordpress
     restart: always
     volumes:
-      - data:/app
-    entrypoint: ["php", "-S", "0.0.0.0:8080"]
+      - data:/www
+    depends_on:
+      - database
     networks:
       internet:
         ipv4_address: 10.10.0.30
@@ -33,14 +36,13 @@ services:
         ipv4_address: 10.11.0.30
 
   debug:
-    image: 'csalab/wordpress:debug-${ARCH:-amd64}'
+    image: 'csalab/wordpress:debug'
     hostname: debug
     restart: always
     tty: true
     user: root
     volumes:
-      - data:/app
-    entrypoint: ["/bin/sh"]
+      - data:/www
     networks:
       internet:
         ipv4_address: 10.10.0.31
