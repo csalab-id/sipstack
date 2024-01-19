@@ -55,6 +55,12 @@ jobs:
       - run:
           name: Checking wordpress-php-fpm.Dockerfile code quality
           command: hadolint build/dockerfile/wordpress-php-fpm.Dockerfile || true
+      - run:
+          name: Trivy test
+          command: trivy image csalab/csaf-dvwa:latest
+      - run:
+          name: Grype test
+          command: grype csalab/csaf-dvwa:latest
   hadolint:
     executor: docker
     steps:
