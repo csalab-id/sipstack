@@ -68,7 +68,7 @@ jobs:
           command: |
             /home/circleci/go/bin/apko publish \
               --quiet --sbom=false build/apko/php-fpm.yaml \
-              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3-fpm
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3-fpm \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:fpm
   build-php-apache2:
     executor: docker
@@ -90,7 +90,7 @@ jobs:
           command: |
             /home/circleci/go/bin/apko publish \
               --quiet --sbom=false build/apko/php-apache2.yaml \
-              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3-apache2
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3-apache2 \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:apache2
   build-wordpress-php-fpm:
     executor: docker
@@ -163,11 +163,20 @@ jobs:
             wget https://github.com/anchore/grype/releases/download/v0.74.0/grype_0.74.0_linux_amd64.deb
             sudo dpkg -i grype_0.74.0_linux_amd64.deb
       - run:
-          name: Scanning latest image
-          command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}
+          name: Scanning sipstack base image
+          command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/sipstack:base
       - run:
           name: Scanning debug image
-          command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-debug
+          command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:fpm
+      - run:
+          name: Scanning debug image
+          command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:apache2
+      - run:
+          name: Scanning debug image
+          command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php-fpm
+      - run:
+          name: Scanning debug image
+          command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:apache2
   trivy-scan:
     executor: docker
     steps:
@@ -180,10 +189,19 @@ jobs:
             sudo dpkg -i trivy_0.48.3_Linux-64bit.deb
       - run:
           name: Scanning latest image
-          command: trivy image ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}
+          command: trivy ${DOCKER_REGISTRY}/${REGISTRY_USER}/sipstack:base
       - run:
           name: Scanning debug image
-          command: trivy image ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-debug
+          command: trivy ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:fpm
+      - run:
+          name: Scanning debug image
+          command: trivy ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:apache2
+      - run:
+          name: Scanning debug image
+          command: trivy ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php-fpm
+      - run:
+          name: Scanning debug image
+          command: trivy ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:apache2
 
 workflows:
   version: 2
