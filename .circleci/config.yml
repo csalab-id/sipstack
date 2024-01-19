@@ -3,9 +3,9 @@ version: 2.1
 parameters:
   workflow:
     type: enum
-    default: test
+    default: auto
     description: The workflow to trigger.
-    enum: [test, auto, manual]
+    enum: [auto, manual]
 
 executors:
   docker:
@@ -13,54 +13,6 @@ executors:
       - image: cimg/base:stable
 
 jobs:
-  setup-tools:
-    executor: docker
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Setup hadolint
-          command: |
-            wget https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64
-            chmod +x hadolint-Linux-x86_64
-            sudo mv hadolint-Linux-x86_64 /usr/local/bin/hadolint
-      - run:
-          name: Setup apko
-          command: |
-            wget https://go.dev/dl/go1.21.6.linux-amd64.tar.gz
-            sudo tar -C /usr/local -xzf go1.21.6.linux-amd64.tar.gz
-            /usr/local/go/bin/go install chainguard.dev/apko@latest
-            rm -rf go1.21.6.linux-amd64.tar.gz
-      - run:
-          name: Setup grype
-          command: |
-            wget https://github.com/anchore/grype/releases/download/v0.74.0/grype_0.74.0_linux_amd64.deb
-            sudo dpkg -i grype_0.74.0_linux_amd64.deb
-      - run:
-          name: Setup trivy
-          command: |
-            wget https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.deb
-            sudo dpkg -i trivy_0.48.3_Linux-64bit.deb
-  hadolint-test:
-    executor: docker
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Checking wordpress.Dockerfile code quality
-          command: hadolint build/dockerfile/wordpress.Dockerfile || true
-      - run:
-          name: Checking wordpress-apache2.Dockerfile code quality
-          command: hadolint build/dockerfile/wordpress-apache2.Dockerfile || true
-      - run:
-          name: Checking wordpress-php-fpm.Dockerfile code quality
-          command: hadolint build/dockerfile/wordpress-php-fpm.Dockerfile || true
-      - run:
-          name: Trivy test
-          command: trivy image csalab/csaf-dvwa:latest
-      - run:
-          name: Grype test
-          command: grype csalab/csaf-dvwa:latest
   hadolint:
     executor: docker
     steps:
@@ -75,14 +27,14 @@ jobs:
       - run:
           name: Checking wordpress-php-fpm.Dockerfile code quality
           command: docker run --rm -i ghcr.io/hadolint/hadolint:latest < build/dockerfile/wordpress-php-fpm.Dockerfile || true
-  build-wordpress:
+  build-base:
     executor: docker
     steps:
       - checkout
       - setup_remote_docker
       - run:
           name: Login to docker hub
-          command: echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin $DOCKER_REGISTRY
+          command: echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin ${DOCKER_REGISTRY}
       - run:
           name: Setup apko
           command: |
@@ -95,22 +47,111 @@ jobs:
           command: |
             /home/circleci/go/bin/apko publish \
               --quiet --sbom=false build/apko/base.yaml \
-              $DOCKER_REGISTRY/$REGISTRY_USER/sipstack:base
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/sipstack:base
+  build-php-fpm:
+    executor: docker
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Login to docker hub
+          command: echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin ${DOCKER_REGISTRY}
+      - run:
+          name: Setup apko
+          command: |
+            wget https://go.dev/dl/go1.21.6.linux-amd64.tar.gz
+            sudo tar -C /usr/local -xzf go1.21.6.linux-amd64.tar.gz
+            /usr/local/go/bin/go install chainguard.dev/apko@latest
+            rm -rf go1.21.6.linux-amd64.tar.gz
+      - run:
+          name: Build and push php-fpm image
+          command: |
+            /home/circleci/go/bin/apko publish \
+              --quiet --sbom=false build/apko/php-fpm.yaml \
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3-fpm
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:fpm
+  build-php-apache2:
+    executor: docker
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Login to docker hub
+          command: echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin ${DOCKER_REGISTRY}
+      - run:
+          name: Setup apko
+          command: |
+            wget https://go.dev/dl/go1.21.6.linux-amd64.tar.gz
+            sudo tar -C /usr/local -xzf go1.21.6.linux-amd64.tar.gz
+            /usr/local/go/bin/go install chainguard.dev/apko@latest
+            rm -rf go1.21.6.linux-amd64.tar.gz
+      - run:
+          name: Build and push php-apache2 image
+          command: |
+            /home/circleci/go/bin/apko publish \
+              --quiet --sbom=false build/apko/php-apache2.yaml \
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3-apache2
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:apache2
+  build-wordpress-php-fpm:
+    executor: docker
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Login to docker hub
+          command: echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin ${DOCKER_REGISTRY}
+      - run:
+          name: Setup apko
+          command: |
+            wget https://go.dev/dl/go1.21.6.linux-amd64.tar.gz
+            sudo tar -C /usr/local -xzf go1.21.6.linux-amd64.tar.gz
+            /usr/local/go/bin/go install chainguard.dev/apko@latest
+            rm -rf go1.21.6.linux-amd64.tar.gz
       - run:
           name: Build and push wordpress latest images
           command: |
-            /home/circleci/go/bin/apko publish \
-              --quiet --sbom=false build/apko/wordpress.yaml \
-              $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:devel
             export DOCKER_CLI_EXPERIMENTAL=enabled
             docker context create buildx-build
             docker buildx create --use buildx-build
             docker buildx build --push \
-              --build-arg REGISTRY_USER=$REGISTRY_USER \
-              --build-arg DOCKER_REGISTRY=$DOCKER_REGISTRY/ \
-              --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION \
-              --tag $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:latest \
-              --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress.Dockerfile .
+              --build-arg REGISTRY_USER=${REGISTRY_USER} \
+              --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php83-fpm \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php-fpm \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php83-fpm \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php-fpm \
+              --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-fpm.Dockerfile .
+  build-wordpress-apache2:
+    executor: docker
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Login to docker hub
+          command: echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin ${DOCKER_REGISTRY}
+      - run:
+          name: Setup apko
+          command: |
+            wget https://go.dev/dl/go1.21.6.linux-amd64.tar.gz
+            sudo tar -C /usr/local -xzf go1.21.6.linux-amd64.tar.gz
+            /usr/local/go/bin/go install chainguard.dev/apko@latest
+            rm -rf go1.21.6.linux-amd64.tar.gz
+      - run:
+          name: Build and push wordpress latest images
+          command: |
+            export DOCKER_CLI_EXPERIMENTAL=enabled
+            docker context create buildx-build
+            docker buildx create --use buildx-build
+            docker buildx build --push \
+              --build-arg REGISTRY_USER=${REGISTRY_USER} \
+              --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php83-apache2 \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php-apache2 \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-apache2 \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION} \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:apache2 \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:latest \
+              --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-apache2.Dockerfile .
   grype-scan:
     executor: docker
     steps:
@@ -123,10 +164,10 @@ jobs:
             sudo dpkg -i grype_0.74.0_linux_amd64.deb
       - run:
           name: Scanning latest image
-          command: grype $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION
+          command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}
       - run:
           name: Scanning debug image
-          command: grype $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION-debug
+          command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-debug
   trivy-scan:
     executor: docker
     steps:
@@ -139,10 +180,10 @@ jobs:
             sudo dpkg -i trivy_0.48.3_Linux-64bit.deb
       - run:
           name: Scanning latest image
-          command: trivy image $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION
+          command: trivy image ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}
       - run:
           name: Scanning debug image
-          command: trivy image $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION-debug
+          command: trivy image ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-debug
 
 workflows:
   version: 2
@@ -156,19 +197,28 @@ workflows:
     when: { equal: [ manual, << pipeline.parameters.workflow >> ] }
     jobs:
       - hadolint
-      - build-wordpress:
+      - build-base:
           requires:
             - hadolint
+      - build-php-apache2:
+          requires:
+            - hadolint
+      - build-php-fpm:
+          requires:
+            - hadolint
+      - build-wordpress-php-fpm:
+          requires:
+            - build-base
+            - build-php-fpm
+      - build-wordpress-apache2:
+          requires:
+            - build-base
+            - build-php-apache2
       - grype-scan:
           requires:
-            - build-wordpress
+            - build-wordpress-php-fpm
+            - build-wordpress-apache2
       - trivy-scan:
           requires:
-            - build-wordpress
-  testing:
-    when: { equal: [ test, << pipeline.parameters.workflow >> ] }
-    jobs:
-      - setup-tools
-      - hadolint-test:
-          requires:
-            - setup-tools
+            - build-wordpress-php-fpm
+            - build-wordpress-apache2
