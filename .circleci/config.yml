@@ -209,8 +209,8 @@ workflows:
     when: { equal: [ auto, << pipeline.parameters.workflow >> ] }
     jobs:
       - hadolint
-      - grype-scan
-      - trivy-scan
+      - grype-scan-all
+      - trivy-scan-all
   build-image-all:
     when: { equal: [ all, << pipeline.parameters.workflow >> ] }
     jobs:
