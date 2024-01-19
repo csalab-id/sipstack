@@ -1,53 +1,108 @@
 version: "3"
 services:
-  modsecurity:
+  # webserver:
+  #   image: 'owasp/modsecurity-crs:apache'
+  #   hostname: webserver
+  #   restart: always
+  #   ports:
+  #     - 0.0.0.0:8080:80
+  #     - 0.0.0.0:443:443
+  #   environment:
+  #     - BACKEND=http://10.10.0.33:80
+  #     - BACKEND_WS=ws://10.10.0.33:80
+  #     - APACHE_ALWAYS_TLS_REDIRECT=on
+  #     - PROXY_SSL_CERT=/cert/archive/${DOMAIN:-csalab.cloud}/cert1.pem
+  #     - PROXY_SSL_CERT_KEY=/cert/archive/${DOMAIN:-csalab.cloud}/privkey1.pem
+  #   volumes:
+  #     - ./cert:/cert
+  #   networks:
+  #     internet:
+  #       ipv4_address: 10.10.0.20
+
+  web-apache2:
     image: 'owasp/modsecurity-crs:apache'
-    hostname: modsecurity
+    hostname: web-apache2
     restart: always
     ports:
-      - 0.0.0.0:80:80
-      #- 0.0.0.0:443:443
+      - 0.0.0.0:8082:80
     environment:
-      - BACKEND=http://10.10.0.30:80
-      - BACKEND_WS=ws://10.10.0.30:80
-      #- APACHE_ALWAYS_TLS_REDIRECT=on
-      #- PROXY_SSL_CERT=/cert/archive/${DOMAIN:-csalab.cloud}/cert1.pem
-      #- PROXY_SSL_CERT_KEY=/cert/archive/${DOMAIN:-csalab.cloud}/privkey1.pem
-    volumes:
-      - ./cert:/cert
-    depends_on:
-      - wordpress
+      - BACKEND=http://10.10.0.32:80
+      - BACKEND_WS=ws://10.10.0.32:80
     networks:
       internet:
-        ipv4_address: 10.10.0.20
+        ipv4_address: 10.10.0.22
 
-  wordpress:
-    image: 'csalab/wordpress:latest'
-    hostname: wordpress
+  web-php-fpm:
+    image: 'owasp/modsecurity-crs:apache'
+    hostname: web-php-fpm
     restart: always
-    volumes:
-      - data:/www
-    depends_on:
-      - database
+    ports:
+      - 0.0.0.0:8081:80
+    environment:
+      - BACKEND=http://10.10.0.33:9000
+      - BACKEND_WS=ws://10.10.0.33:9000
     networks:
       internet:
-        ipv4_address: 10.10.0.30
-      no-internet:
-        ipv4_address: 10.11.0.30
+        ipv4_address: 10.10.0.21
 
-  debug:
-    image: 'csalab/wordpress:debug'
-    hostname: debug
+  # wordpress:
+  #   image: 'csalab/wordpress:latest'
+  #   hostname: wordpress
+  #   restart: always
+  #   volumes:
+  #     - data:/www
+  #     - ./cert/busybox:/bin/busybox
+  #   depends_on:
+  #     - database
+  #   networks:
+  #     internet:
+  #       ipv4_address: 10.10.0.30
+  #     no-internet:
+  #       ipv4_address: 10.11.0.30
+
+  base:
+    image: 'csalab/sipstack:base${RTAG}'
+    hostname: base
     restart: always
     tty: true
     user: root
     volumes:
-      - data:/www
+      - data:/data/wordpress
+      - data-apache2:/data/apache2
+      - data-php-fpm:/data/php-fpm
     networks:
       internet:
         ipv4_address: 10.10.0.31
       no-internet:
         ipv4_address: 10.11.0.31
+
+  apache2:
+    image: 'csalab/wordpress:apache2'
+    hostname: wordpress-apache2
+    restart: always
+    volumes:
+      - data-apache2:/var/www/localhost/htdocs
+    depends_on:
+      - database
+    networks:
+      internet:
+        ipv4_address: 10.10.0.32
+      no-internet:
+        ipv4_address: 10.11.0.32
+
+  php-fpm:
+    image: 'csalab/wordpress:php-fpm'
+    hostname: wordpress-php-fpm
+    restart: always
+    volumes:
+      - data-php-fpm:/var/www/localhost/htdocs
+    depends_on:
+      - database
+    networks:
+      internet:
+        ipv4_address: 10.10.0.33
+      no-internet:
+        ipv4_address: 10.11.0.33
 
   database:
     image: 'mysql:8.2.0'
@@ -82,4 +137,6 @@ networks:
 
 volumes:
   data: {}
+  data-apache2: {}
+  data-php-fpm: {}
   mysql: {}

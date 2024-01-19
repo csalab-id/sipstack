@@ -34,53 +34,29 @@ contents:
     - php83-xmlwriter
     - php83-opcache
     - php83-zip
-    - nginx
-    - nginx-openrc
 
 environment:
   PATH: ""
 
 accounts:
   groups:
-    - groupname: nginx
-      gid: 10000
     - groupname: nobody
-      gid: 65534
+      gid: 10000
   users:
-    - username: nginx
-      uid: 10000
     - username: nobody
-      uid: 65534
+      uid: 10000
   run-as: root
-
-paths:
-  - path: /run/nginx
-    type: directory
-    uid: 10000
-    gid: 10000
-    permissions: 0o755
-  - path: /var/lib/nginx/fastcgi_cache
-    type: directory
-    uid: 10000
-    gid: 10000
-    permissions: 0o755
-  - path: /etc/nginx/http.d/default.conf
-    type: hardlink
-    source: /usr/share/nginx/http-default_server.conf
-    uid: 10000
-    gid: 10000
-    permissions: 0o644
 
 entrypoint:
   type: service-bundle
   services:
-    webserver: /wordpress-init
+    webserver: /usr/sbin/php-fpm83 -F
 
 os-release:
   id: sipstack
   version-id: '1.0.0'
-  name: 'Sipstack LEP'
-  pretty-name: 'Sipstack LEP (apko)'
+  name: 'Sipstack PHP'
+  pretty-name: 'Sipstack PHP (fpm)'
 
 archs:
   - x86_64

@@ -1,0 +1,19 @@
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/edge/main
+    - https://dl-cdn.alpinelinux.org/alpine/edge/community
+  packages:
+    - alpine-base
+
+entrypoint:
+  command: /bin/sh -l
+
+os-release:
+  id: sipstack
+  version-id: '1.0.0'
+  name: 'Sipstack Base'
+  pretty-name: 'Sipstack Base (apko)'
+
+archs:
+  - x86_64
+  - arm64

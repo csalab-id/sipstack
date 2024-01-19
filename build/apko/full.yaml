@@ -4,10 +4,12 @@ contents:
     - https://dl-cdn.alpinelinux.org/alpine/edge/community
   packages:
     - alpine-base
+    - apache2
     - gcc
     - musl-dev
     - ca-certificates-bundle
     - php83
+    - php83-apache2
     - php83-bcmath
     - php83-bz2
     - php83-calendar
@@ -59,7 +61,7 @@ contents:
     - php83-pecl-grpc
     - php83-pecl-igbinary
     - php83-pecl-imagick
-    - php83-pecl-imagick
+    - php83-pecl-imagick-dev
     - php83-pecl-luasandbox
     - php83-pecl-mailparse
     - php83-pecl-maxminddb
@@ -113,9 +115,13 @@ accounts:
   groups:
     - groupname: nginx
       gid: 10000
+    - groupname: apache
+      gid: 10001
   users:
     - username: nginx
       uid: 10000
+    - username: apache
+      uid: 10001
   run-as: root
 
 paths:
@@ -142,8 +148,8 @@ entrypoint:
 os-release:
   id: sipstack
   version-id: '1.0.0'
-  name: 'Sipstack LEP'
-  pretty-name: 'Sipstack LEP (apko)'
+  name: 'Sipstack Full'
+  pretty-name: 'Sipstack Full (apko)'
 
 archs:
   - x86_64

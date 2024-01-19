@@ -4,6 +4,7 @@ contents:
     - https://dl-cdn.alpinelinux.org/alpine/edge/community
   packages:
     - php83
+    - php83-apache2
     - php83-bcmath
     - php83-ctype
     - php83-curl
@@ -34,53 +35,37 @@ contents:
     - php83-xmlwriter
     - php83-opcache
     - php83-zip
-    - nginx
-    - nginx-openrc
+    - apache2
 
 environment:
   PATH: ""
 
 accounts:
   groups:
-    - groupname: nginx
+    - groupname: apache
       gid: 10000
-    - groupname: nobody
-      gid: 65534
   users:
-    - username: nginx
+    - username: apache
       uid: 10000
-    - username: nobody
-      uid: 65534
   run-as: root
 
 paths:
-  - path: /run/nginx
+  - path: /var/www/localhost/htdocs
     type: directory
     uid: 10000
     gid: 10000
     permissions: 0o755
-  - path: /var/lib/nginx/fastcgi_cache
-    type: directory
-    uid: 10000
-    gid: 10000
-    permissions: 0o755
-  - path: /etc/nginx/http.d/default.conf
-    type: hardlink
-    source: /usr/share/nginx/http-default_server.conf
-    uid: 10000
-    gid: 10000
-    permissions: 0o644
 
 entrypoint:
   type: service-bundle
   services:
-    webserver: /wordpress-init
+    webserver: /usr/sbin/httpd -DFOREGROUND
 
 os-release:
   id: sipstack
   version-id: '1.0.0'
-  name: 'Sipstack LEP'
-  pretty-name: 'Sipstack LEP (apko)'
+  name: 'Sipstack PHP'
+  pretty-name: 'Sipstack PHP (apache2)'
 
 archs:
   - x86_64

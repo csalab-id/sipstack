@@ -3,9 +3,9 @@ version: 2.1
 parameters:
   workflow:
     type: enum
-    default: auto
+    default: test
     description: The workflow to trigger.
-    enum: [auto, manual]
+    enum: [test, auto, manual]
 
 executors:
   docker:
@@ -13,6 +13,48 @@ executors:
       - image: cimg/base:stable
 
 jobs:
+  setup-tools:
+    executor: docker
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Setup hadolint
+          command: |
+            wget https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64
+            chmod +x hadolint-Linux-x86_64
+            sudo mv hadolint-Linux-x86_64 /usr/local/bin/hadolint
+      - run:
+          name: Setup apko
+          command: |
+            wget https://go.dev/dl/go1.21.6.linux-amd64.tar.gz
+            sudo tar -C /usr/local -xzf go1.21.6.linux-amd64.tar.gz
+            /usr/local/go/bin/go install chainguard.dev/apko@latest
+            rm -rf go1.21.6.linux-amd64.tar.gz
+      - run:
+          name: Setup grype
+          command: |
+            wget https://github.com/anchore/grype/releases/download/v0.74.0/grype_0.74.0_linux_amd64.deb
+            sudo dpkg -i grype_0.74.0_linux_amd64.deb
+      - run:
+          name: Setup trivy
+          command: |
+            wget https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.deb
+            sudo dpkg -i trivy_0.48.3_Linux-64bit.deb
+  hadolint-test:
+    executor: docker
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Checking wordpress.Dockerfile code quality
+          command: hadolint build/dockerfile/wordpress.Dockerfile || true
+      - run:
+          name: Checking wordpress-apache2.Dockerfile code quality
+          command: hadolint build/dockerfile/wordpress-apache2.Dockerfile || true
+      - run:
+          name: Checking wordpress-php-fpm.Dockerfile code quality
+          command: hadolint build/dockerfile/wordpress-php-fpm.Dockerfile || true
   hadolint:
     executor: docker
     steps:
@@ -21,6 +63,12 @@ jobs:
       - run:
           name: Checking wordpress.Dockerfile code quality
           command: docker run --rm -i ghcr.io/hadolint/hadolint:latest < build/dockerfile/wordpress.Dockerfile || true
+      - run:
+          name: Checking wordpress-apache2.Dockerfile code quality
+          command: docker run --rm -i ghcr.io/hadolint/hadolint:latest < build/dockerfile/wordpress-apache2.Dockerfile || true
+      - run:
+          name: Checking wordpress-php-fpm.Dockerfile code quality
+          command: docker run --rm -i ghcr.io/hadolint/hadolint:latest < build/dockerfile/wordpress-php-fpm.Dockerfile || true
   build-wordpress:
     executor: docker
     steps:
@@ -37,12 +85,11 @@ jobs:
             /usr/local/go/bin/go install chainguard.dev/apko@latest
             rm -rf go1.21.6.linux-amd64.tar.gz
       - run:
-          name: Build and push wordpress debug images
+          name: Build and push sipstack base image
           command: |
             /home/circleci/go/bin/apko publish \
-              --quiet --sbom=false build/apko/wordpress-debug.yaml \
-              $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:$IMAGE_VERSION-debug \
-              $DOCKER_REGISTRY/$REGISTRY_USER/wordpress:debug
+              --quiet --sbom=false build/apko/base.yaml \
+              $DOCKER_REGISTRY/$REGISTRY_USER/sipstack:base
       - run:
           name: Build and push wordpress latest images
           command: |
@@ -112,3 +159,10 @@ workflows:
       - trivy-scan:
           requires:
             - build-wordpress
+  testing:
+    when: { equal: [ test, << pipeline.parameters.workflow >> ] }
+    jobs:
+      - setup-tools
+      - hadolint-test:
+          requires:
+            - setup-tools
