@@ -196,9 +196,6 @@ jobs:
       - run:
           name: Build and push wordpress-php82-fpm images
           command: |
-            export DOCKER_CLI_EXPERIMENTAL=enabled
-            docker context create buildx-build
-            docker buildx create --use buildx-build
             docker buildx build --push \
               --build-arg REGISTRY_USER=${REGISTRY_USER} \
               --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
@@ -209,9 +206,6 @@ jobs:
       - run:
           name: Build and push wordpress-php83-fpm images
           command: |
-            export DOCKER_CLI_EXPERIMENTAL=enabled
-            docker context create buildx-build
-            docker buildx create --use buildx-build
             docker buildx build --push \
               --build-arg REGISTRY_USER=${REGISTRY_USER} \
               --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
@@ -252,9 +246,6 @@ jobs:
       - run:
           name: Build and push wordpress-php82-apache2 images
           command: |
-            export DOCKER_CLI_EXPERIMENTAL=enabled
-            docker context create buildx-build
-            docker buildx create --use buildx-build
             docker buildx build --push \
               --build-arg REGISTRY_USER=${REGISTRY_USER} \
               --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
@@ -265,9 +256,6 @@ jobs:
       - run:
           name: Build and push wordpress-php83-apache2 latest images
           command: |
-            export DOCKER_CLI_EXPERIMENTAL=enabled
-            docker context create buildx-build
-            docker buildx create --use buildx-build
             docker buildx build --push \
               --build-arg REGISTRY_USER=${REGISTRY_USER} \
               --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
@@ -349,6 +337,9 @@ workflows:
     jobs:
       - hadolint
       - build-base:
+          requires:
+            - hadolint
+      - build-php-all:
           requires:
             - hadolint
       - build-php-fpm:
