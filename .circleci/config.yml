@@ -148,8 +148,13 @@ jobs:
           command: |
             /home/circleci/go/bin/apko publish \
               --sbom=false build/apko/php83/php-full.yaml \
-              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:latest \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3
+      - run:
+          name: Build and push php:latest image
+          command: |
+            /home/circleci/go/bin/apko publish \
+              --sbom=false build/apko/php83/php-full.yaml \
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:latest
   build-wordpress-php-fpm:
     executor: docker
     steps:
