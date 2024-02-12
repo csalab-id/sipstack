@@ -80,7 +80,12 @@ jobs:
           command: |
             /home/circleci/go/bin/apko publish \
               --sbom=false build/apko/php83/php-fpm.yaml \
-              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3-fpm \
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3-fpm
+      - run:
+          name: Build and push php-fpm image
+          command: |
+            /home/circleci/go/bin/apko publish \
+              --sbom=false build/apko/php83/php-fpm.yaml \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:fpm
   build-php-apache2:
     executor: docker
@@ -114,7 +119,12 @@ jobs:
           command: |
             /home/circleci/go/bin/apko publish \
               --sbom=false build/apko/php83/php-apache2.yaml \
-              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3-apache2 \
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3-apache2
+      - run:
+          name: Build and push php-apache2 image
+          command: |
+            /home/circleci/go/bin/apko publish \
+              --sbom=false build/apko/php83/php-apache2.yaml \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:apache2
   build-php-all:
     executor: docker
@@ -171,7 +181,7 @@ jobs:
             /usr/local/go/bin/go install chainguard.dev/apko@latest
             rm -rf go1.21.6.linux-amd64.tar.gz
       - run:
-          name: Build and push wordpress latest images
+          name: Build and push wordpress-php81-fpm images
           command: |
             export DOCKER_CLI_EXPERIMENTAL=enabled
             docker context create buildx-build
@@ -179,6 +189,33 @@ jobs:
             docker buildx build --push \
               --build-arg REGISTRY_USER=${REGISTRY_USER} \
               --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
+              --build-arg PHP_VERSION="8.1-" \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php81-fpm \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php81-fpm \
+              --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-fpm.Dockerfile .
+      - run:
+          name: Build and push wordpress-php82-fpm images
+          command: |
+            export DOCKER_CLI_EXPERIMENTAL=enabled
+            docker context create buildx-build
+            docker buildx create --use buildx-build
+            docker buildx build --push \
+              --build-arg REGISTRY_USER=${REGISTRY_USER} \
+              --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
+              --build-arg PHP_VERSION="8.2-" \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php82-fpm \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php82-fpm \
+              --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-fpm.Dockerfile .
+      - run:
+          name: Build and push wordpress-php83-fpm images
+          command: |
+            export DOCKER_CLI_EXPERIMENTAL=enabled
+            docker context create buildx-build
+            docker buildx create --use buildx-build
+            docker buildx build --push \
+              --build-arg REGISTRY_USER=${REGISTRY_USER} \
+              --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
+              --build-arg PHP_VERSION="8.3-" \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php83-fpm \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php-fpm \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php83-fpm \
@@ -200,7 +237,7 @@ jobs:
             /usr/local/go/bin/go install chainguard.dev/apko@latest
             rm -rf go1.21.6.linux-amd64.tar.gz
       - run:
-          name: Build and push wordpress latest images
+          name: Build and push wordpress-php81-apache2 images
           command: |
             export DOCKER_CLI_EXPERIMENTAL=enabled
             docker context create buildx-build
@@ -208,11 +245,38 @@ jobs:
             docker buildx build --push \
               --build-arg REGISTRY_USER=${REGISTRY_USER} \
               --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
+              --build-arg PHP_VERSION="8.1-" \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php81-apache2 \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php81-apache2
+              --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-apache2.Dockerfile .
+      - run:
+          name: Build and push wordpress-php82-apache2 images
+          command: |
+            export DOCKER_CLI_EXPERIMENTAL=enabled
+            docker context create buildx-build
+            docker buildx create --use buildx-build
+            docker buildx build --push \
+              --build-arg REGISTRY_USER=${REGISTRY_USER} \
+              --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
+              --build-arg PHP_VERSION="8.2-" \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php82-apache2 \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php82-apache2
+              --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-apache2.Dockerfile .
+      - run:
+          name: Build and push wordpress-php83-apache2 latest images
+          command: |
+            export DOCKER_CLI_EXPERIMENTAL=enabled
+            docker context create buildx-build
+            docker buildx create --use buildx-build
+            docker buildx build --push \
+              --build-arg REGISTRY_USER=${REGISTRY_USER} \
+              --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
+              --build-arg PHP_VERSION="8.3-" \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php83-apache2 \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php-apache2 \
-              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-apache2 \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION} \
-              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:apache2 \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php83-apache2 \
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php-apache2 \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:latest \
               --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-apache2.Dockerfile .
   grype-scan-all:
