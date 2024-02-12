@@ -46,7 +46,7 @@ jobs:
           name: Build and push sipstack base image
           command: |
             /home/circleci/go/bin/apko publish \
-              --quiet --sbom=false build/apko/base.yaml \
+              --sbom=false build/apko/base.yaml \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/sipstack:base
   build-php-fpm:
     executor: docker
@@ -67,19 +67,19 @@ jobs:
           name: Build and push php81-fpm image
           command: |
             /home/circleci/go/bin/apko publish \
-              --quiet --sbom=false build/apko/php81/php-fpm.yaml \
+              --sbom=false build/apko/php81/php-fpm.yaml \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.1-fpm
       - run:
           name: Build and push php82-fpm image
           command: |
             /home/circleci/go/bin/apko publish \
-              --quiet --sbom=false build/apko/php82/php-fpm.yaml \
+              --sbom=false build/apko/php82/php-fpm.yaml \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.2-fpm
       - run:
           name: Build and push php83-fpm image
           command: |
             /home/circleci/go/bin/apko publish \
-              --quiet --sbom=false build/apko/php83/php-fpm.yaml \
+              --sbom=false build/apko/php83/php-fpm.yaml \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3-fpm \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:fpm
   build-php-apache2:
@@ -101,19 +101,19 @@ jobs:
           name: Build and push php81-apache2 image
           command: |
             /home/circleci/go/bin/apko publish \
-              --quiet --sbom=false build/apko/php81/php-apache2.yaml \
+              --sbom=false build/apko/php81/php-apache2.yaml \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.1-apache2
       - run:
           name: Build and push php81-apache2 image
           command: |
             /home/circleci/go/bin/apko publish \
-              --quiet --sbom=false build/apko/php82/php-apache2.yaml \
+              --sbom=false build/apko/php82/php-apache2.yaml \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.2-apache2
       - run:
           name: Build and push php81-apache2 image
           command: |
             /home/circleci/go/bin/apko publish \
-              --quiet --sbom=false build/apko/php83/php-apache2.yaml \
+              --sbom=false build/apko/php83/php-apache2.yaml \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3-apache2 \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:apache2
   build-wordpress-php-fpm:
