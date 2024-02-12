@@ -241,7 +241,7 @@ jobs:
               --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
               --build-arg PHP_VERSION="8.1-" \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php81-apache2 \
-              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php81-apache2
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php81-apache2 \
               --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-apache2.Dockerfile .
       - run:
           name: Build and push wordpress-php82-apache2 images
@@ -251,7 +251,7 @@ jobs:
               --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
               --build-arg PHP_VERSION="8.2-" \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php82-apache2 \
-              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php82-apache2
+              --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php82-apache2 \
               --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-apache2.Dockerfile .
       - run:
           name: Build and push wordpress-php83-apache2 latest images
