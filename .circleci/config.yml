@@ -5,7 +5,7 @@ parameters:
     type: enum
     default: auto
     description: The workflow to trigger.
-    enum: [auto, base, php-fpm, php-apache2, wp-php-fpm, wp-php-apache2, all]
+    enum: [auto, base, php-all, php-fpm, php-apache2, wp-php-fpm, wp-php-apache2, all]
 
 executors:
   docker:
@@ -104,18 +104,52 @@ jobs:
               --sbom=false build/apko/php81/php-apache2.yaml \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.1-apache2
       - run:
-          name: Build and push php81-apache2 image
+          name: Build and push php82-apache2 image
           command: |
             /home/circleci/go/bin/apko publish \
               --sbom=false build/apko/php82/php-apache2.yaml \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.2-apache2
       - run:
-          name: Build and push php81-apache2 image
+          name: Build and push php83-apache2 image
           command: |
             /home/circleci/go/bin/apko publish \
               --sbom=false build/apko/php83/php-apache2.yaml \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3-apache2 \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:apache2
+  build-php-all:
+    executor: docker
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Login to docker hub
+          command: echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin ${DOCKER_REGISTRY}
+      - run:
+          name: Setup apko
+          command: |
+            wget https://go.dev/dl/go1.21.6.linux-amd64.tar.gz
+            sudo tar -C /usr/local -xzf go1.21.6.linux-amd64.tar.gz
+            /usr/local/go/bin/go install chainguard.dev/apko@latest
+            rm -rf go1.21.6.linux-amd64.tar.gz
+      - run:
+          name: Build and push php81-apache2 image
+          command: |
+            /home/circleci/go/bin/apko publish \
+              --sbom=false build/apko/php81/php-full.yaml \
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.1
+      - run:
+          name: Build and push php82-apache2 image
+          command: |
+            /home/circleci/go/bin/apko publish \
+              --sbom=false build/apko/php82/php-full.yaml \
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.2
+      - run:
+          name: Build and push php83-apache2 image
+          command: |
+            /home/circleci/go/bin/apko publish \
+              --sbom=false build/apko/php83/php-full.yaml \
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3 \
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:latest
   build-wordpress-php-fpm:
     executor: docker
     steps:
@@ -190,6 +224,9 @@ jobs:
           name: Scanning sipstack base image
           command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/sipstack:base
       - run:
+          name: Scanning php-latest image
+          command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:latest
+      - run:
           name: Scanning php-fpm image
           command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:fpm
       - run:
@@ -214,6 +251,9 @@ jobs:
       - run:
           name: Scanning sipstack base image
           command: trivy image ${DOCKER_REGISTRY}/${REGISTRY_USER}/sipstack:base
+      - run:
+          name: Scanning php-latest image
+          command: trivy image ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:latest
       - run:
           name: Scanning php-fpm image
           command: trivy image ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:fpm
@@ -277,6 +317,19 @@ workflows:
       - trivy-scan-all:
           requires:
             - build-base
+  build-image-php-all:
+    when: { equal: [ php-all, << pipeline.parameters.workflow >> ] }
+    jobs:
+      - hadolint
+      - build-php-all:
+          requires:
+            - hadolint
+      - grype-scan-all:
+          requires:
+            - build-php-all
+      - trivy-scan-all:
+          requires:
+            - build-php-all
   build-image-php-fpm:
     when: { equal: [ php-fpm, << pipeline.parameters.workflow >> ] }
     jobs:
