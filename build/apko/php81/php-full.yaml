@@ -13,7 +13,6 @@ contents:
     - php81-ctype
     - php81-curl
     - php81-dba
-    - php81-dbg
     - php81-dev
     - php81-doc
     - php81-dom
@@ -51,6 +50,7 @@ contents:
     - php81-pecl-ast
     - php81-pecl-brotli
     - php81-pecl-couchbase
+    - php81-pecl-decimal
     - php81-pecl-ds
     - php81-pecl-event
     - php81-pecl-grpc
@@ -58,14 +58,17 @@ contents:
     - php81-pecl-imagick
     - php81-pecl-imagick-dev
     - php81-pecl-luasandbox
+    - php81-pecl-lzf
     - php81-pecl-mailparse
     - php81-pecl-maxminddb
+    - php81-pecl-mcrypt
     - php81-pecl-memcache
     - php81-pecl-memcached
     - php81-pecl-mongodb
     - php81-pecl-msgpack
     - php81-pecl-opentelemetry
     - php81-pecl-pcov
+    - php81-pecl-protobuf
     - php81-pecl-psr
     - php81-pecl-rdkafka
     - php81-pecl-redis
@@ -73,11 +76,15 @@ contents:
     - php81-pecl-ssh2
     - php81-pecl-swoole
     - php81-pecl-swoole-dev
+    - php81-pecl-timezonedb
     - php81-pecl-uploadprogress
     - php81-pecl-uploadprogress-doc
+    - php81-pecl-uuid
+    - php81-pecl-vips
     - php81-pecl-xdebug
     - php81-pecl-xhprof
     - php81-pecl-xhprof-assets
+    - php81-pecl-xlswriter
     - php81-pecl-yaml
     - php81-pecl-zstd
     - php81-pgsql
@@ -92,6 +99,7 @@ contents:
     - php81-soap
     - php81-sockets
     - php81-sodium
+    - php81-spx
     - php81-sqlite3
     - php81-sysvmsg
     - php81-sysvsem

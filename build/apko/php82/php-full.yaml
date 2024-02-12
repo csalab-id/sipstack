@@ -51,6 +51,7 @@ contents:
     - php82-pecl-ast
     - php82-pecl-brotli
     - php82-pecl-couchbase
+    - php82-pecl-decimal
     - php82-pecl-ds
     - php82-pecl-event
     - php82-pecl-grpc
@@ -58,14 +59,17 @@ contents:
     - php82-pecl-imagick
     - php82-pecl-imagick-dev
     - php82-pecl-luasandbox
+    - php82-pecl-lzf
     - php82-pecl-mailparse
     - php82-pecl-maxminddb
+    - php82-pecl-mcrypt
     - php82-pecl-memcache
     - php82-pecl-memcached
     - php82-pecl-mongodb
     - php82-pecl-msgpack
     - php82-pecl-opentelemetry
     - php82-pecl-pcov
+    - php82-pecl-protobuf
     - php82-pecl-psr
     - php82-pecl-rdkafka
     - php82-pecl-redis
@@ -73,11 +77,15 @@ contents:
     - php82-pecl-ssh2
     - php82-pecl-swoole
     - php82-pecl-swoole-dev
+    - php82-pecl-timezonedb
     - php82-pecl-uploadprogress
     - php82-pecl-uploadprogress-doc
+    - php82-pecl-uuid
+    - php82-pecl-vips
     - php82-pecl-xdebug
     - php82-pecl-xhprof
     - php82-pecl-xhprof-assets
+    - php82-pecl-xlswriter
     - php82-pecl-yaml
     - php82-pecl-zstd
     - php82-pgsql
@@ -92,6 +100,7 @@ contents:
     - php82-soap
     - php82-sockets
     - php82-sodium
+    - php82-spx
     - php82-sqlite3
     - php82-sysvmsg
     - php82-sysvsem
