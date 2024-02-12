@@ -1,0 +1,63 @@
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/edge/main
+    - https://dl-cdn.alpinelinux.org/alpine/edge/community
+  packages:
+    - php82
+    - php82-bcmath
+    - php82-ctype
+    - php82-curl
+    - php82-dom
+    - php82-exif
+    - php82-fileinfo
+    - php82-fpm
+    - php82-ftp
+    - php82-gd
+    - php82-iconv
+    - php82-pecl-imagick
+    - php82-intl
+    - php82-mbstring
+    - php82-mysqli
+    - php82-mysqlnd
+    - php82-openssl
+    - php82-pdo
+    - php82-pdo_sqlite
+    - php82-phar
+    - php82-posix
+    - php82-session
+    - php82-simplexml
+    - php82-sodium
+    - php82-sqlite3
+    - php82-tokenizer
+    - php82-xml
+    - php82-xmlreader
+    - php82-xmlwriter
+    - php82-opcache
+    - php82-zip
+
+environment:
+  PATH: ""
+
+accounts:
+  groups:
+    - groupname: nobody
+      gid: 10000
+  users:
+    - username: nobody
+      uid: 10000
+  run-as: root
+
+entrypoint:
+  type: service-bundle
+  services:
+    webserver: /usr/sbin/php-fpm82 -F
+
+os-release:
+  id: sipstack
+  version-id: '1.0.0'
+  name: 'Sipstack PHP 8.2'
+  pretty-name: 'Sipstack PHP 8.2 (fpm)'
+
+archs:
+  - x86_64
+  - arm64

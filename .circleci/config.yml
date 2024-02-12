@@ -5,7 +5,7 @@ parameters:
     type: enum
     default: auto
     description: The workflow to trigger.
-    enum: [auto, base, php-fpm, php-apache2, wp-php-fpm, wp-apache2, all]
+    enum: [auto, base, php-fpm, php-apache2, wp-php-fpm, wp-php-apache2, all]
 
 executors:
   docker:
@@ -22,8 +22,8 @@ jobs:
           name: Checking wordpress.Dockerfile code quality
           command: docker run --rm -i ghcr.io/hadolint/hadolint:latest < build/dockerfile/wordpress.Dockerfile || true
       - run:
-          name: Checking wordpress-apache2.Dockerfile code quality
-          command: docker run --rm -i ghcr.io/hadolint/hadolint:latest < build/dockerfile/wordpress-apache2.Dockerfile || true
+          name: Checking wordpress-php-apache2.Dockerfile code quality
+          command: docker run --rm -i ghcr.io/hadolint/hadolint:latest < build/dockerfile/wordpress-php-apache2.Dockerfile || true
       - run:
           name: Checking wordpress-php-fpm.Dockerfile code quality
           command: docker run --rm -i ghcr.io/hadolint/hadolint:latest < build/dockerfile/wordpress-php-fpm.Dockerfile || true
@@ -64,10 +64,22 @@ jobs:
             /usr/local/go/bin/go install chainguard.dev/apko@latest
             rm -rf go1.21.6.linux-amd64.tar.gz
       - run:
-          name: Build and push php-fpm image
+          name: Build and push php81-fpm image
           command: |
             /home/circleci/go/bin/apko publish \
-              --quiet --sbom=false build/apko/php-fpm.yaml \
+              --quiet --sbom=false build/apko/php81/php-fpm.yaml \
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.1-fpm
+      - run:
+          name: Build and push php82-fpm image
+          command: |
+            /home/circleci/go/bin/apko publish \
+              --quiet --sbom=false build/apko/php82/php-fpm.yaml \
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.2-fpm
+      - run:
+          name: Build and push php83-fpm image
+          command: |
+            /home/circleci/go/bin/apko publish \
+              --quiet --sbom=false build/apko/php83/php-fpm.yaml \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3-fpm \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:fpm
   build-php-apache2:
@@ -86,10 +98,22 @@ jobs:
             /usr/local/go/bin/go install chainguard.dev/apko@latest
             rm -rf go1.21.6.linux-amd64.tar.gz
       - run:
-          name: Build and push php-apache2 image
+          name: Build and push php81-apache2 image
           command: |
             /home/circleci/go/bin/apko publish \
-              --quiet --sbom=false build/apko/php-apache2.yaml \
+              --quiet --sbom=false build/apko/php81/php-apache2.yaml \
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.1-apache2
+      - run:
+          name: Build and push php81-apache2 image
+          command: |
+            /home/circleci/go/bin/apko publish \
+              --quiet --sbom=false build/apko/php82/php-apache2.yaml \
+              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.2-apache2
+      - run:
+          name: Build and push php81-apache2 image
+          command: |
+            /home/circleci/go/bin/apko publish \
+              --quiet --sbom=false build/apko/php83/php-apache2.yaml \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.3-apache2 \
               ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:apache2
   build-wordpress-php-fpm:
@@ -121,7 +145,7 @@ jobs:
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php83-fpm \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php-fpm \
               --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-fpm.Dockerfile .
-  build-wordpress-apache2:
+  build-wordpress-php-apache2:
     executor: docker
     steps:
       - checkout
@@ -151,7 +175,7 @@ jobs:
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION} \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:apache2 \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:latest \
-              --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-apache2.Dockerfile .
+              --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-apache2.Dockerfile .
   grype-scan-all:
     executor: docker
     steps:
@@ -175,7 +199,7 @@ jobs:
           name: Scanning wordpress-php-fpm image
           command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php-fpm
       - run:
-          name: Scanning wordpress-apache2 image
+          name: Scanning wordpress-php-apache2 image
           command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:apache2
   trivy-scan-all:
     executor: docker
@@ -200,7 +224,7 @@ jobs:
           name: Scanning wordpress-php-fpm image
           command: trivy image ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php-fpm
       - run:
-          name: Scanning wordpress-apache2 image
+          name: Scanning wordpress-php-apache2 image
           command: trivy image ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:apache2
 
 workflows:
@@ -228,18 +252,18 @@ workflows:
           requires:
             - build-base
             - build-php-fpm
-      - build-wordpress-apache2:
+      - build-wordpress-php-apache2:
           requires:
             - build-base
             - build-php-apache2
       - grype-scan-all:
           requires:
             - build-wordpress-php-fpm
-            - build-wordpress-apache2
+            - build-wordpress-php-apache2
       - trivy-scan-all:
           requires:
             - build-wordpress-php-fpm
-            - build-wordpress-apache2
+            - build-wordpress-php-apache2
   build-image-base:
     when: { equal: [ base, << pipeline.parameters.workflow >> ] }
     jobs:
@@ -299,8 +323,8 @@ workflows:
       - trivy-scan-all:
           requires:
             - build-wordpress-php-fpm
-  build-image-wordpress-apache2:
-    when: { equal: [ wp-apache2, << pipeline.parameters.workflow >> ] }
+  build-image-wordpress-php-apache2:
+    when: { equal: [ wp-php-apache2, << pipeline.parameters.workflow >> ] }
     jobs:
       - hadolint
       - build-base:
@@ -309,13 +333,13 @@ workflows:
       - build-php-apache2:
           requires:
             - hadolint
-      - build-wordpress-apache2:
+      - build-wordpress-php-apache2:
           requires:
             - build-base
             - build-php-apache2
       - grype-scan-all:
           requires:
-            - build-wordpress-apache2
+            - build-wordpress-php-apache2
       - trivy-scan-all:
           requires:
-            - build-wordpress-apache2
+            - build-wordpress-php-apache2

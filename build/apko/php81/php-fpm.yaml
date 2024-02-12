@@ -1,0 +1,63 @@
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/edge/main
+    - https://dl-cdn.alpinelinux.org/alpine/edge/community
+  packages:
+    - php81
+    - php81-bcmath
+    - php81-ctype
+    - php81-curl
+    - php81-dom
+    - php81-exif
+    - php81-fileinfo
+    - php81-fpm
+    - php81-ftp
+    - php81-gd
+    - php81-iconv
+    - php81-pecl-imagick
+    - php81-intl
+    - php81-mbstring
+    - php81-mysqli
+    - php81-mysqlnd
+    - php81-openssl
+    - php81-pdo
+    - php81-pdo_sqlite
+    - php81-phar
+    - php81-posix
+    - php81-session
+    - php81-simplexml
+    - php81-sodium
+    - php81-sqlite3
+    - php81-tokenizer
+    - php81-xml
+    - php81-xmlreader
+    - php81-xmlwriter
+    - php81-opcache
+    - php81-zip
+
+environment:
+  PATH: ""
+
+accounts:
+  groups:
+    - groupname: nobody
+      gid: 10000
+  users:
+    - username: nobody
+      uid: 10000
+  run-as: root
+
+entrypoint:
+  type: service-bundle
+  services:
+    webserver: /usr/sbin/php-fpm81 -F
+
+os-release:
+  id: sipstack
+  version-id: '1.0.0'
+  name: 'Sipstack PHP 8.1'
+  pretty-name: 'Sipstack PHP 8.1 (fpm)'
+
+archs:
+  - x86_64
+  - arm64

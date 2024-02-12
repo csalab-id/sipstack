@@ -4,6 +4,7 @@ contents:
     - https://dl-cdn.alpinelinux.org/alpine/edge/community
   packages:
     - php83
+    - php83-apache2
     - php83-bcmath
     - php83-ctype
     - php83-curl
@@ -34,29 +35,37 @@ contents:
     - php83-xmlwriter
     - php83-opcache
     - php83-zip
+    - apache2
 
 environment:
   PATH: ""
 
 accounts:
   groups:
-    - groupname: nobody
+    - groupname: apache
       gid: 10000
   users:
-    - username: nobody
+    - username: apache
       uid: 10000
   run-as: root
+
+paths:
+  - path: /var/www/localhost/htdocs
+    type: directory
+    uid: 10000
+    gid: 10000
+    permissions: 0o755
 
 entrypoint:
   type: service-bundle
   services:
-    webserver: /usr/sbin/php-fpm83 -F
+    webserver: /usr/sbin/httpd -DFOREGROUND
 
 os-release:
   id: sipstack
   version-id: '1.0.0'
-  name: 'Sipstack PHP'
-  pretty-name: 'Sipstack PHP (fpm)'
+  name: 'Sipstack PHP 8.3'
+  pretty-name: 'Sipstack PHP 8.3 (apache2)'
 
 archs:
   - x86_64

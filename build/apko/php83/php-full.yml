@@ -3,11 +3,6 @@ contents:
     - https://dl-cdn.alpinelinux.org/alpine/edge/main
     - https://dl-cdn.alpinelinux.org/alpine/edge/community
   packages:
-    - alpine-base
-    - apache2
-    - gcc
-    - musl-dev
-    - ca-certificates-bundle
     - php83
     - php83-apache2
     - php83-bcmath
@@ -108,48 +103,15 @@ contents:
     - php83-xmlwriter
     - php83-xsl
     - php83-zip
-    - nginx
-    - nginx-openrc
-
-accounts:
-  groups:
-    - groupname: nginx
-      gid: 10000
-    - groupname: apache
-      gid: 10001
-  users:
-    - username: nginx
-      uid: 10000
-    - username: apache
-      uid: 10001
-  run-as: root
-
-paths:
-  - path: /run/nginx
-    type: directory
-    uid: 10000
-    gid: 10000
-    permissions: 0o755
-  - path: /var/lib/nginx
-    type: directory
-    uid: 10000
-    gid: 10000
-    permissions: 0o755
-  - path: /etc/nginx/http.d/default.conf
-    type: hardlink
-    source: /usr/share/nginx/http-default_server.conf
-    uid: 10000
-    gid: 10000
-    permissions: 0o644
 
 entrypoint:
-  command: /bin/sh -l
+  command: /usr/bin/php83 -a
 
 os-release:
   id: sipstack
   version-id: '1.0.0'
-  name: 'Sipstack Full'
-  pretty-name: 'Sipstack Full (apko)'
+  name: 'Sipstack PHP 8.3'
+  pretty-name: 'Sipstack PHP 8.3 (full)'
 
 archs:
   - x86_64
