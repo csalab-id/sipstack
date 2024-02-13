@@ -34,6 +34,7 @@ contents:
     - php82-xmlwriter
     - php82-opcache
     - php82-zip
+    - busybox
 
 environment:
   PATH: ""

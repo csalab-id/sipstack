@@ -36,6 +36,7 @@ contents:
     - php82-opcache
     - php82-zip
     - apache2
+    - busybox
 
 environment:
   PATH: ""
