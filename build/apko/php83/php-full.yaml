@@ -104,6 +104,8 @@ contents:
     - php83-xsl
     - php83-zip
 
+work-dir: /var/www
+
 entrypoint:
   command: /usr/bin/php83 -a
 

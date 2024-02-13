@@ -36,7 +36,6 @@ contents:
     - php81-opcache
     - php81-zip
     - apache2
-    - busybox
 
 environment:
   PATH: ""
@@ -45,10 +44,14 @@ accounts:
   groups:
     - groupname: apache
       gid: 10000
+      members: []
   users:
     - username: apache
       uid: 10000
-  run-as: root
+      gid: 10000
+  run-as: 0
+
+work-dir: /var/www/localhost/htdocs
 
 paths:
   - path: /var/www/localhost/htdocs
@@ -58,9 +61,7 @@ paths:
     permissions: 0o755
 
 entrypoint:
-  type: service-bundle
-  services:
-    webserver: /usr/sbin/httpd -DFOREGROUND
+  command: /usr/sbin/httpd -DFOREGROUND
 
 os-release:
   id: sipstack

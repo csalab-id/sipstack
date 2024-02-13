@@ -113,6 +113,8 @@ contents:
     - php82-xsl
     - php82-zip
 
+work-dir: /var/www
+
 entrypoint:
   command: /usr/bin/php82 -a
 

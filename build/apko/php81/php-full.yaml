@@ -112,6 +112,8 @@ contents:
     - php81-xsl
     - php81-zip
 
+work-dir: /var/www
+
 entrypoint:
   command: /usr/bin/php81 -a
 
