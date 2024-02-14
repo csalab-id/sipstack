@@ -310,7 +310,7 @@ jobs:
           command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php-fpm
       - run:
           name: Scanning wordpress-php-apache2 image
-          command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:apache2
+          command: grype ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php-apache2
   trivy-scan-all:
     executor: docker
     steps:
@@ -338,7 +338,7 @@ jobs:
           command: trivy image ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php-fpm
       - run:
           name: Scanning wordpress-php-apache2 image
-          command: trivy image ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:apache2
+          command: trivy image ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php-apache2
 
 workflows:
   version: 2
