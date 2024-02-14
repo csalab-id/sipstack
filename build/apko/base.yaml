@@ -5,6 +5,8 @@ contents:
   packages:
     - alpine-base
 
+work-dir: /root
+
 entrypoint:
   command: /bin/sh -l
 

@@ -5,6 +5,7 @@ contents:
   packages:
     - php82
     - php82-bcmath
+    - php82-common
     - php82-ctype
     - php82-curl
     - php82-dom

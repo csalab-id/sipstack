@@ -6,6 +6,7 @@ contents:
     - php83
     - php83-apache2
     - php83-bcmath
+    - php83-common
     - php83-ctype
     - php83-curl
     - php83-dom
