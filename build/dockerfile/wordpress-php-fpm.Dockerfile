@@ -12,11 +12,11 @@ LABEL maintainer="admin@csalab.id"
 COPY --from=builder --chown=nobody:nobody /tmp/WordPress-6.4.3 /var/www/html
 COPY data/passwd-php-fpm /etc/passwd
 RUN /bin/busybox sed -i "s/127.0.0.1:9000/0.0.0.0:9000/g" /etc/php*/php-fpm.d/www.conf && \
-    /bin/busybox sed -i "s/;chdir/chdir/g" /etc/php*/php-fpm.d/www.conf && \
+    /bin/busybox sed -i "s/;chdir = \/var\/www/chdir = \/var\/www\/html/g" /etc/php*/php-fpm.d/www.conf && \
     /bin/busybox find /sbin -type l -exec /bin/busybox unlink {} \; && \
     /bin/busybox find /bin -type l -exec /bin/busybox unlink {} \; && \
     /bin/busybox find /usr/sbin -type l -exec /bin/busybox unlink {} \; && \
     /bin/busybox find /usr/bin -type l -exec /bin/busybox unlink {} \; && \
     /bin/busybox rm -rf /bin/busybox
-WORKDIR /var/www
+WORKDIR /var/www/html
 ENTRYPOINT [ "/usr/sbin/php-fpm83", "-F" ]
