@@ -11,6 +11,7 @@ FROM ${DOCKER_REGISTRY}${REGISTRY_USER}/php:${PHP_VERSION}fpm${RTAG}
 LABEL maintainer="admin@csalab.id"
 COPY --from=builder --chown=nobody:nobody /tmp/WordPress-6.4.3 /var/www/html
 COPY data/passwd-php-fpm /etc/passwd
+COPY data/group-php-fpm /etc/group
 RUN /bin/busybox sed -i "s/127.0.0.1:9000/0.0.0.0:9000/g" /etc/php*/php-fpm.d/www.conf && \
     /bin/busybox sed -i "s/;chdir = \/var\/www/chdir = \/var\/www\/html/g" /etc/php*/php-fpm.d/www.conf && \
     /bin/busybox find /sbin -type l -exec /bin/busybox unlink {} \; && \
