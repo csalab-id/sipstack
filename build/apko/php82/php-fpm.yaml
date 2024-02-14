@@ -50,10 +50,10 @@ accounts:
       gid: 10000
   run-as: 0
 
-work-dir: /var/www
+work-dir: /var/www/html
 
 paths:
-  - path: /var/www
+  - path: /var/www/html
     type: directory
     uid: 10000
     gid: 10000
