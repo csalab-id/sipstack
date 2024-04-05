@@ -2,6 +2,7 @@ ARG DOCKER_REGISTRY
 ARG REGISTRY_USER=csalab
 ARG RTAG
 ARG PHP_VERSION
+ARG IMAGE_VERSION
 FROM ${DOCKER_REGISTRY}${REGISTRY_USER}/sipstack:base${RTAG} as builder
 WORKDIR /tmp
 RUN wget -q https://github.com/WordPress/WordPress/archive/refs/tags/${IMAGE_VERSION}.tar.gz && \

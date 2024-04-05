@@ -174,13 +174,6 @@ jobs:
           name: Login to docker hub
           command: echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin ${DOCKER_REGISTRY}
       - run:
-          name: Setup apko
-          command: |
-            wget https://go.dev/dl/go1.21.6.linux-amd64.tar.gz
-            sudo tar -C /usr/local -xzf go1.21.6.linux-amd64.tar.gz
-            /usr/local/go/bin/go install chainguard.dev/apko@latest
-            rm -rf go1.21.6.linux-amd64.tar.gz
-      - run:
           name: Build and push wordpress-php81-fpm images
           command: |
             export DOCKER_CLI_EXPERIMENTAL=enabled
@@ -190,6 +183,7 @@ jobs:
               --build-arg REGISTRY_USER=${REGISTRY_USER} \
               --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
               --build-arg PHP_VERSION="8.1-" \
+              --build-arg IMAGE_VERSION=${IMAGE_VERSION} \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php81-fpm \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php81-fpm \
               --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-fpm.Dockerfile .
@@ -200,6 +194,7 @@ jobs:
               --build-arg REGISTRY_USER=${REGISTRY_USER} \
               --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
               --build-arg PHP_VERSION="8.2-" \
+              --build-arg IMAGE_VERSION=${IMAGE_VERSION} \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php82-fpm \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php82-fpm \
               --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-fpm.Dockerfile .
@@ -210,6 +205,7 @@ jobs:
               --build-arg REGISTRY_USER=${REGISTRY_USER} \
               --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
               --build-arg PHP_VERSION="8.3-" \
+              --build-arg IMAGE_VERSION=${IMAGE_VERSION} \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php83-fpm \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php83-fpm \
               --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-fpm.Dockerfile .
@@ -220,6 +216,7 @@ jobs:
               --build-arg REGISTRY_USER=${REGISTRY_USER} \
               --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
               --build-arg PHP_VERSION="8.3-" \
+              --build-arg IMAGE_VERSION=${IMAGE_VERSION} \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php-fpm \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php-fpm \
               --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-fpm.Dockerfile .
@@ -232,13 +229,6 @@ jobs:
           name: Login to docker hub
           command: echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin ${DOCKER_REGISTRY}
       - run:
-          name: Setup apko
-          command: |
-            wget https://go.dev/dl/go1.21.6.linux-amd64.tar.gz
-            sudo tar -C /usr/local -xzf go1.21.6.linux-amd64.tar.gz
-            /usr/local/go/bin/go install chainguard.dev/apko@latest
-            rm -rf go1.21.6.linux-amd64.tar.gz
-      - run:
           name: Build and push wordpress-php81-apache2 images
           command: |
             export DOCKER_CLI_EXPERIMENTAL=enabled
@@ -248,6 +238,7 @@ jobs:
               --build-arg REGISTRY_USER=${REGISTRY_USER} \
               --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
               --build-arg PHP_VERSION="8.1-" \
+              --build-arg IMAGE_VERSION=${IMAGE_VERSION} \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php81-apache2 \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php81-apache2 \
               --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-apache2.Dockerfile .
@@ -258,6 +249,7 @@ jobs:
               --build-arg REGISTRY_USER=${REGISTRY_USER} \
               --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
               --build-arg PHP_VERSION="8.2-" \
+              --build-arg IMAGE_VERSION=${IMAGE_VERSION} \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php82-apache2 \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php82-apache2 \
               --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-apache2.Dockerfile .
@@ -268,6 +260,7 @@ jobs:
               --build-arg REGISTRY_USER=${REGISTRY_USER} \
               --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
               --build-arg PHP_VERSION="8.3-" \
+              --build-arg IMAGE_VERSION=${IMAGE_VERSION} \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php83-apache2 \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php83-apache2 \
               --platform linux/amd64,linux/arm64 -f build/dockerfile/wordpress-php-apache2.Dockerfile .
@@ -278,6 +271,7 @@ jobs:
               --build-arg REGISTRY_USER=${REGISTRY_USER} \
               --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}/ \
               --build-arg PHP_VERSION="8.3-" \
+              --build-arg IMAGE_VERSION=${IMAGE_VERSION} \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION}-php-apache2 \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:${IMAGE_VERSION} \
               --tag ${DOCKER_REGISTRY}/${REGISTRY_USER}/wordpress:php-apache2 \
