@@ -2,13 +2,14 @@ ARG DOCKER_REGISTRY
 ARG REGISTRY_USER=csalab
 ARG RTAG
 ARG PHP_VERSION
-ARG IMAGE_VERSION
 FROM ${DOCKER_REGISTRY}${REGISTRY_USER}/sipstack:base${RTAG} as builder
+ARG IMAGE_VERSION
 WORKDIR /tmp
 RUN wget -q "https://github.com/WordPress/WordPress/archive/refs/tags/${IMAGE_VERSION}.tar.gz" && \
     tar -xf "${IMAGE_VERSION}.tar.gz"
 
 FROM ${DOCKER_REGISTRY}${REGISTRY_USER}/php:${PHP_VERSION}apache2${RTAG}
+ARG IMAGE_VERSION
 LABEL maintainer="admin@csalab.id"
 COPY data/passwd-php-apache2 /etc/passwd
 COPY data/group-php-apache2 /etc/group
