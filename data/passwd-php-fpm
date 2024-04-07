@@ -1,2 +1,2 @@
 root:x:0:0:root:/root:/bin/ash
-nobody:x:10000:10000:Nobody:/home/nobody:/sbin/nologin
+nobody:x:101:101:Nobody:/home/nobody:/sbin/nologin

@@ -133,8 +133,8 @@ int main()
     const char *folderPath = "/usr/src/wordpress";
     const char *destinationPath = "/var/www/html";
     struct stat folderInfo;
-    uid_t owner = 10000;
-    gid_t group = 10000;
+    uid_t owner = 101;
+    gid_t group = 101;
     if (stat(folderPath, &folderInfo) == 0 && S_ISDIR(folderInfo.st_mode))
     {
         printf("Wordpress not found in /var/www/html - copying now...\n");
@@ -142,7 +142,7 @@ int main()
         changeOwnershipRecursive(destinationPath, owner, group);
         printf("Complete! WordPress has been successfully copied to /var/www/html\n");
     }
-    printf("Starting Apache...\n");
+    printf("Starting PHP-FPM...\n");
     char *args[] = {"/usr/sbin/php-fpm83", "-F", NULL};
     execvp(args[0], args);
     perror("execvp");
