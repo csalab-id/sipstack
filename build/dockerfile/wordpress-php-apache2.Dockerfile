@@ -6,7 +6,7 @@ FROM ${DOCKER_REGISTRY}${REGISTRY_USER}/sipstack:base${RTAG} as builder
 ARG IMAGE_VERSION
 WORKDIR /tmp
 COPY script/wordpress-apache.cpp /tmp
-RUN apk add --no-cache musl-dev g++ openssl && \
+RUN apk add --no-cache musl-dev g++ ssl_client && \
     gcc -o startup wordpress-apache.cpp && \
     wget -q "https://github.com/WordPress/WordPress/archive/refs/tags/${IMAGE_VERSION}.tar.gz" && \
     tar -xf "${IMAGE_VERSION}.tar.gz"
