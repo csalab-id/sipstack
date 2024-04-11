@@ -5,7 +5,7 @@ parameters:
     type: enum
     default: auto
     description: The workflow to trigger.
-    enum: [auto, base, php-all, php-fpm, php-apache2, wp-php-fpm, wp-php-apache2, all]
+    enum: [auto, base, php-all, php-fpm, php-apache2, wp-php-fpm, wp-php-apache2, wp-all, all]
 
 executors:
   docker:
@@ -430,16 +430,9 @@ workflows:
     when: { equal: [ wp-php-fpm, << pipeline.parameters.workflow >> ] }
     jobs:
       - hadolint
-      - build-base:
-          requires:
-            - hadolint
-      - build-php-fpm:
-          requires:
-            - hadolint
       - build-wordpress-php-fpm:
           requires:
-            - build-base
-            - build-php-fpm
+            - hadolint
       - grype-scan-all:
           requires:
             - build-wordpress-php-fpm
@@ -450,19 +443,30 @@ workflows:
     when: { equal: [ wp-php-apache2, << pipeline.parameters.workflow >> ] }
     jobs:
       - hadolint
-      - build-base:
-          requires:
-            - hadolint
-      - build-php-apache2:
-          requires:
-            - hadolint
       - build-wordpress-php-apache2:
           requires:
-            - build-base
-            - build-php-apache2
+            - hadolin
       - grype-scan-all:
           requires:
             - build-wordpress-php-apache2
       - trivy-scan-all:
           requires:
+            - build-wordpress-php-apache2
+  build-image-wordpress-all:
+    when: { equal: [ wp-all, << pipeline.parameters.workflow >> ] }
+    jobs:
+      - hadolint
+      - build-wordpress-php-fpm:
+          requires:
+            - hadolint
+      - build-wordpress-php-apache2:
+          requires:
+            - hadolin
+      - grype-scan-all:
+          requires:
+            - build-wordpress-php-fpm
+            - build-wordpress-php-apache2
+      - trivy-scan-all:
+          requires:
+            - build-wordpress-php-fpm
             - build-wordpress-php-apache2
