@@ -63,12 +63,12 @@ jobs:
             sudo tar -C /usr/local -xzf go1.21.6.linux-amd64.tar.gz
             /usr/local/go/bin/go install chainguard.dev/apko@latest
             rm -rf go1.21.6.linux-amd64.tar.gz
-      - run:
-          name: Build and push php81-fpm image
-          command: |
-            /home/circleci/go/bin/apko publish \
-              --sbom=false build/apko/php81/php-fpm.yaml \
-              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.1-fpm
+      # - run:
+      #     name: Build and push php81-fpm image
+      #     command: |
+      #       /home/circleci/go/bin/apko publish \
+      #         --sbom=false build/apko/php81/php-fpm.yaml \
+      #         ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.1-fpm
       - run:
           name: Build and push php82-fpm image
           command: |
@@ -102,12 +102,12 @@ jobs:
             sudo tar -C /usr/local -xzf go1.21.6.linux-amd64.tar.gz
             /usr/local/go/bin/go install chainguard.dev/apko@latest
             rm -rf go1.21.6.linux-amd64.tar.gz
-      - run:
-          name: Build and push php81-apache2 image
-          command: |
-            /home/circleci/go/bin/apko publish \
-              --sbom=false build/apko/php81/php-apache2.yaml \
-              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.1-apache2
+      # - run:
+      #     name: Build and push php81-apache2 image
+      #     command: |
+      #       /home/circleci/go/bin/apko publish \
+      #         --sbom=false build/apko/php81/php-apache2.yaml \
+      #         ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.1-apache2
       - run:
           name: Build and push php82-apache2 image
           command: |
@@ -141,12 +141,12 @@ jobs:
             sudo tar -C /usr/local -xzf go1.21.6.linux-amd64.tar.gz
             /usr/local/go/bin/go install chainguard.dev/apko@latest
             rm -rf go1.21.6.linux-amd64.tar.gz
-      - run:
-          name: Build and push php:8.1 image
-          command: |
-            /home/circleci/go/bin/apko publish \
-              --sbom=false build/apko/php81/php-full.yaml \
-              ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.1
+      # - run:
+      #     name: Build and push php:8.1 image
+      #     command: |
+      #       /home/circleci/go/bin/apko publish \
+      #         --sbom=false build/apko/php81/php-full.yaml \
+      #         ${DOCKER_REGISTRY}/${REGISTRY_USER}/php:8.1
       - run:
           name: Build and push php:8.2 image
           command: |
