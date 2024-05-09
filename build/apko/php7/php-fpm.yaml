@@ -1,0 +1,73 @@
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/v3.15/main
+    - https://dl-cdn.alpinelinux.org/alpine/v3.15/community
+  packages:
+    - php7
+    - php7-bcmath
+    - php7-common
+    - php7-ctype
+    - php7-curl
+    - php7-dom
+    - php7-exif
+    - php7-fileinfo
+    - php7-fpm
+    - php7-ftp
+    - php7-gd
+    - php7-iconv
+    - php7-pecl-imagick
+    - php7-intl
+    - php7-mbstring
+    - php7-mysqli
+    - php7-mysqlnd
+    - php7-openssl
+    - php7-pdo
+    - php7-pdo_sqlite
+    - php7-phar
+    - php7-posix
+    - php7-session
+    - php7-simplexml
+    - php7-sodium
+    - php7-sqlite3
+    - php7-tokenizer
+    - php7-xml
+    - php7-xmlreader
+    - php7-xmlwriter
+    - php7-opcache
+    - php7-zip
+
+environment:
+  PATH: ""
+
+accounts:
+  groups:
+    - groupname: nobody
+      gid: 10000
+      members: []
+  users:
+    - username: nobody
+      uid: 10000
+      gid: 10000
+  run-as: 0
+
+work-dir: /var/www/html
+
+paths:
+  - path: /var/www/html
+    type: directory
+    uid: 10000
+    gid: 10000
+    permissions: 0o755
+
+entrypoint:
+  command: /usr/sbin/php-fpm81 -F
+
+os-release:
+  id: sipstack
+  version-id: '1.0.0'
+  name: 'Sipstack PHP 8.1'
+  pretty-name: 'Sipstack PHP 8.1 (fpm)'
+
+archs:
+  - x86_64
+  - arm64
